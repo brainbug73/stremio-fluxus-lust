@@ -8,7 +8,7 @@ const defaults = {
 	paginate: 100
 }
 
-hls.init({ prefix: defaults.prefix, type: 'tv', config })
+hls.init({ prefix: defaults.prefix, type: 'porn', config })
 
 const types = [
 	{
@@ -26,7 +26,7 @@ if (config.style == 'Catalogs')
 			catalogs.push({
 				name: types[i].name,
 				id: defaults.prefix + 'cat_' + i,
-				type: 'tv',
+				type: 'porn',
 				extra: [ { name: 'search' }, { name: 'skip' } ]
 			})
 
@@ -40,14 +40,16 @@ if (!catalogs.length)
 	catalogs.push({
 		id: defaults.prefix + 'cat',
 		name: defaults.name,
-		type: 'tv',
+		type: 'porn',
 		extra: [{ name: 'search' }]
 	})
 
-const metaTypes = ['tv']
+const metaTypes = ['porn']
 
 if (config.style == 'Channels')
 	metaTypes.push('channel')
+else
+	metaTypes.push('tv')
 
 const builder = new addonBuilder({
 	id: 'org.' + defaults.name.toLowerCase().replace(/[^a-z]+/g,''),
@@ -107,7 +109,7 @@ builder.defineCatalogHandler(args => {
 					reject(defaults.name + ' - Could not get items from M3U playlist: ' + args.id)
 				else {
 					if (!extra.search)
-						resolve({ metas: metas.slice(skip, skip + defaults.paginate) })
+						resolve({ metas: metas.slice(skip, skip + defaults.paginate).map(el => { el.type = 'tv'; return el }) })
 					else {
 						let results = []
 						metas.forEach(meta => {
@@ -115,7 +117,7 @@ builder.defineCatalogHandler(args => {
 								results.push(meta)
 						})
 						if (results.length)
-							resolve({ metas: results })
+							resolve({ metas: results.map(el => { el.type = 'tv'; return el }) })
 						else
 							reject(defaults.name + ' - No search results for: ' + extra.search)
 					}
